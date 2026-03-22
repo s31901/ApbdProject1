@@ -1,4 +1,4 @@
-﻿namespace ApbdProject1.model;
+﻿namespace ApbdProject1.Models;
 
 public class Laptop : Equipment
 {
