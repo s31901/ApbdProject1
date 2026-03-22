@@ -14,6 +14,7 @@ public class EquipmentService
     }
     
     public List<Equipment> GetAllEquipment() => _equipment;
+    public Equipment GetEquipmentById(int id) => _equipment.First(e => e.Id == id);
     public List<Equipment> GetAvailableEquipment() => _equipment.Where(e => e.IsAvailable).ToList();
     public void MarkEquipmentAsUnavailable(int id) => _equipment.First(e => e.Id == id).IsAvailable = false;
     public void MarkEquipmentAsAvailable(int id) => _equipment.First(e => e.Id == id).IsAvailable = true;

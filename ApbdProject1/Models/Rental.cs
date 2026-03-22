@@ -4,7 +4,7 @@ namespace ApbdProject1.Models;
 
 public class Rental
 {
-    public int Id { get; }
+    public int Id { get; set; }
     public Equipment Equipment { get; private set; }
     public User User { get; private set; }
 
@@ -25,9 +25,8 @@ public class Rental
         }
     }
 
-    public Rental(int id, Equipment equipment, User user, DateTime rentalDate, int durationDays)
+    public Rental(Equipment equipment, User user, DateTime rentalDate, int durationDays)
     {
-        Id = id;
         Equipment = equipment ?? throw new ArgumentNullException(nameof(equipment));
         User = user ?? throw new ArgumentNullException(nameof(user));
         RentalDate = rentalDate;
@@ -35,4 +34,13 @@ public class Rental
             ? durationDays
             : throw new ArgumentException("Duration must be positive", nameof(durationDays));
     }
+
+    public override string ToString() =>
+        $"ID: {Id}\n" + 
+        $"Equipment: {Equipment.Name}\n" + 
+        $"User: {User}\n" +
+        $"Rental date: {RentalDate:dd.MM.yyyy} | Duration: {RentalDurationDays} days | " +
+        $"Return date: {(IsReturned ? ReturnDate!.Value.ToString("dd.MM.yyyy") : "Not returned")}\n" +
+        $"Fine: {CalculatedFine:C}";
+    
 }
