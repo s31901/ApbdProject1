@@ -1,3 +1,4 @@
+using ApbdProject1.Config;
 using ApbdProject1.Models;
 
 namespace ApbdProject1.Services;
@@ -9,14 +10,50 @@ public class RentalSerivce
 
     public void NewRental(Rental rental)
     {
-        rental.Id = _nextId++;
-        _rentals.Add(rental);
+        if (!rental.Equipment.IsAvailable)
+        {
+            Console.WriteLine("Equipment is already rented");
+        }
+        else if (!IsRentalPossibleForUser(rental.User))
+        {
+            Console.WriteLine("Rental limit for user reached");
+        }
+        else
+        {
+            rental.Equipment.IsAvailable = false;
+            rental.Id = _nextId++;
+            _rentals.Add(rental);
+        }
     }
     
     public List<Rental> GetAllRentals() => _rentals;
     public Rental GetRentalById(int id) => _rentals.First(r => r.Id == id);
+
+    public void ReturnEquipment(int id)
+    {
+        var rental = _rentals.First(r => r.Id == id);
+        rental.Equipment.IsAvailable = true;
+        rental.ReturnDate = DateTime.Now;
+        if (rental.IsOverdue)
+        {
+            Console.WriteLine("Rental is overdue. Fine: " + rental.CalculatedFine);
+        }
+    } 
     
-    public void ReturnEquipment(int id) => _rentals.First(r => r.Id == id).ReturnDate = DateTime.Now;
-    
-    
+    public int GetActiveRentalsForUser(User user) => _rentals.Count(r => r.User.Id == user.Id && !r.IsReturned);
+
+    public bool IsRentalPossibleForUser(User user)
+    {
+        int max = 0;
+        switch (user.Usertype)
+        {
+            case UserType.Employee: 
+                max = RentalPolicy.EmployeeMaxRentals;
+                break;
+            case UserType.Student: 
+                max = RentalPolicy.StudentMaxRentals;
+                break;
+        }
+        return GetActiveRentalsForUser(user) < max;
+    }
 }
