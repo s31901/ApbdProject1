@@ -14,6 +14,10 @@ public class RentalSerivce
         {
             Console.WriteLine("Equipment is already rented");
         }
+        else if (rental.Equipment.IsOutOfOrder)
+        {
+            Console.WriteLine("Equipment is out of order (being repaired)");
+        }
         else if (!IsRentalPossibleForUser(rental.User))
         {
             Console.WriteLine("Rental limit for user reached");
@@ -23,6 +27,7 @@ public class RentalSerivce
             rental.Equipment.IsAvailable = false;
             rental.Id = _nextId++;
             _rentals.Add(rental);
+            Console.WriteLine($"Rental created: {rental.Id}, {rental.Equipment.Name}, {rental.User.Name}");
         }
     }
     
@@ -56,4 +61,7 @@ public class RentalSerivce
         }
         return GetActiveRentalsForUser(user) < max;
     }
+    public int GetNumberOfRentals() => _rentals.Count;
+    public int GetNumberOfActiveRentals() => _rentals.Count(r => !r.IsReturned);
+    public int GetNumberOfOverdueRentals() => _rentals.Count(r => r.IsOverdue);
 }

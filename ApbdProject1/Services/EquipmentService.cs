@@ -16,6 +16,13 @@ public class EquipmentService
     public List<Equipment> GetAllEquipment() => _equipment;
     public Equipment GetEquipmentById(int id) => _equipment.First(e => e.Id == id);
     public List<Equipment> GetAvailableEquipment() => _equipment.Where(e => e.IsAvailable).ToList();
-    public void MarkEquipmentAsUnavailable(int id) => _equipment.First(e => e.Id == id).IsAvailable = false;
-    public void MarkEquipmentAsAvailable(int id) => _equipment.First(e => e.Id == id).IsAvailable = true;
+    public void MarkEquipmentAsNotOutOfOrder(int id) => _equipment.First(e => e.Id == id).IsOutOfOrder = false;
+    public void MarkEquipmentAsOutOfOrder(int id)
+    {
+        if (_equipment.First(e => e.Id == id).IsAvailable) _equipment.First(e => e.Id == id).IsOutOfOrder = true;
+        else Console.WriteLine("Equipment is rented. Cannot mark as out of order.");
+        
+    } 
+    public int GetNumberOfEquipment() => _equipment.Count;
+    public int GetNumberOfAvailableEquipment() => _equipment.Count(e => e.IsAvailable);
 }

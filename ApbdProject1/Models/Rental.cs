@@ -5,11 +5,11 @@ namespace ApbdProject1.Models;
 public class Rental
 {
     public int Id { get; set; }
-    public Equipment Equipment { get; private set; }
-    public User User { get; private set; }
+    public Equipment Equipment { get; }
+    public User User { get; }
 
-    public DateTime RentalDate { get; private set; }
-    public int RentalDurationDays { get; private set; }
+    public DateTime RentalDate { get; }
+    public int RentalDurationDays { get; }
     public DateTime DueDate => RentalDate.AddDays(RentalDurationDays);
     public DateTime? ReturnDate { get; set; }
 

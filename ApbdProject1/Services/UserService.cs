@@ -14,4 +14,5 @@ public class UserService
     }
     public List<User> GetAllUsers() => _users;
     public User GetUserById(int id) => _users.First(u => u.Id == id);
+    public int GetNumberOfUsers() => _users.Count;
 }

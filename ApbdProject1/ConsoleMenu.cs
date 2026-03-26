@@ -71,4 +71,18 @@ public class ConsoleMenu
             Console.WriteLine("**************");
         }
     }
+    
+    public void GenerateReport()
+    {
+        Console.WriteLine("\n*******************");
+        Console.WriteLine("*SUMMARY REPORT*");
+        Console.WriteLine($"Total number of equipment: {_equipmentService.GetNumberOfEquipment()}");
+        Console.WriteLine($"Number of available equipment: {_equipmentService.GetNumberOfAvailableEquipment()}");
+        Console.WriteLine($"Number of users: {_userService.GetNumberOfUsers()}");
+        Console.WriteLine($"Total number of rentals: {_rentalService.GetNumberOfRentals()}");
+        Console.WriteLine($"Total number of active rentals: {_rentalService.GetNumberOfActiveRentals()}");
+        Console.WriteLine($"Total number of overdue rentals: {_rentalService.GetNumberOfOverdueRentals()}");
+        Console.WriteLine("*******************\n");
+    }
+    
 }
