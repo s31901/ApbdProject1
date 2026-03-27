@@ -3,7 +3,7 @@ using ApbdProject1.Models;
 
 namespace ApbdProject1.Services;
 
-public class RentalSerivce
+public class RentalService
 {
     private readonly List<Rental> _rentals = new();
     private int _nextId = 1;
@@ -35,14 +35,19 @@ public class RentalSerivce
     public Rental GetRentalById(int id) => _rentals.First(r => r.Id == id);
 
     public void ReturnEquipment(int id)
-    {
-        var rental = _rentals.First(r => r.Id == id);
-        rental.Equipment.IsAvailable = true;
-        rental.ReturnDate = DateTime.Now;
-        if (rental.IsOverdue)
+    {   
+        if(_rentals.First(r => r.Id == id).IsReturned) Console.WriteLine("Equipment is already returned");
+        else
         {
-            Console.WriteLine("Rental is overdue. Fine: " + rental.CalculatedFine);
+                    var rental = _rentals.First(r => r.Id == id);
+                    rental.Equipment.IsAvailable = true;
+                    rental.ReturnDate = DateTime.Now;
+                    if (rental.IsOverdue)
+                    {
+                        Console.WriteLine("Rental is overdue. Fine: " + rental.CalculatedFine);
+                    }
         }
+
     } 
     
     public int GetActiveRentalsForUser(User user) => _rentals.Count(r => r.User.Id == user.Id && !r.IsReturned);
