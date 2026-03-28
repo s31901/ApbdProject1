@@ -37,6 +37,7 @@ public class ConsoleMenu
                 case "9": ShowActiveRentalsForUser(); break;
                 case "10": ShowOverdueActiveRentals(); break;
                 case "11": GenerateReport(); break;
+                case "12": ChangeRentalDates(); break;
                 default: Console.WriteLine("Unknown option"); break;
             }
         }
@@ -59,6 +60,7 @@ public class ConsoleMenu
         Console.WriteLine("9. Show active rentals for a user");
         Console.WriteLine("10. Show current overdue rentals");
         Console.WriteLine("11. Generate report");
+        Console.WriteLine("12. [For testing!!!] Change rental dates");
     }
 
     private void ShowAllEquipment()
@@ -143,6 +145,12 @@ public class ConsoleMenu
         Console.Write("Type (1 - Student, 2 - Employee): ");
         var type = Console.ReadLine();
 
+        if (type != "1" && type != "2")
+        {
+            Console.WriteLine("Unknown user type. Returning to menu.");
+            return;
+        }
+        
         User user = type == "1"
             ? new User(name, surname, UserType.Student)
             : new User(name, surname, UserType.Employee);
@@ -153,25 +161,34 @@ public class ConsoleMenu
 
     private void AddEquipment()
     {
-        Console.Write("Type (1 - Laptop, 2 - Projector, 3 - Camera): ");
-        var type = Console.ReadLine();
-        Console.Write("Name: ");
-        var name = Console.ReadLine()!;
-        Console.Write("Producer: ");
-        var producer = Console.ReadLine()!;
-        Console.Write("Production year: ");
-        var year = int.Parse(Console.ReadLine()!);
+        try {
+            Console.Write("Type (1 - Laptop, 2 - Projector, 3 - Camera): ");
+            var type = int.Parse(Console.ReadLine()!);
+            Console.Write("Name: ");
+            var name = Console.ReadLine()!;
+            Console.Write("Producer: ");
+            var producer = Console.ReadLine()!;
+            Console.Write("Production year: ");
+            var year = int.Parse(Console.ReadLine()!);
 
-        Equipment equipment = type switch
+            Equipment equipment = type switch
+            {
+                1 => CreateLaptop(name, producer, year),
+                2 => CreateProjector(name, producer, year),
+                3 => CreateCamera(name, producer, year),
+                _ => throw new ArgumentException("Unknown type")
+            };
+            
+            _equipmentService.AddEquipment(equipment);
+            Console.WriteLine("Equipment added.");
+        } catch (FormatException)
         {
-            "1" => CreateLaptop(name, producer, year),
-            "2" => CreateProjector(name, producer, year),
-            "3" => CreateCamera(name, producer, year),
-            _ => throw new ArgumentException("Unknown type")
-        };
-
-        _equipmentService.AddEquipment(equipment);
-        Console.WriteLine("Equipment added.");
+            Console.WriteLine("Invalid input - expected a number. Returning to menu.");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Something went wrong: {e.Message}. Returning to menu.");
+        }
     }
 
     private Laptop CreateLaptop(string name, string producer, int year)
@@ -202,51 +219,125 @@ public class ConsoleMenu
     }
     private void NewRental()
     {
-        ShowAllUsers();
-        Console.Write("User ID: ");
-        var userId = int.Parse(Console.ReadLine()!);
-        var user = _userService.GetUserById(userId);
+        try {
+            ShowAllUsers();
+            Console.Write("User ID: ");
+            var userId = int.Parse(Console.ReadLine()!);
+            var user = _userService.GetUserById(userId);
 
-        ShowAvailableEquipment();
-        Console.Write("Equipment ID: ");
-        var equipId = int.Parse(Console.ReadLine()!);
-        var equipment = _equipmentService.GetEquipmentById(equipId);
+            ShowAvailableEquipment();
+            Console.Write("Equipment ID: ");
+            var equipId = int.Parse(Console.ReadLine()!);
+            var equipment = _equipmentService.GetEquipmentById(equipId);
 
-        Console.Write("Duration (days): ");
-        var days = int.Parse(Console.ReadLine()!);
+            Console.Write("Duration (days): ");
+            var days = int.Parse(Console.ReadLine()!);
 
-        _rentalService.NewRental(new Rental(equipment, user, DateTime.Now, days));
+            _rentalService.NewRental(new Rental(equipment, user, DateTime.Now, days));
+        }  catch (FormatException)
+        {
+            Console.WriteLine("Invalid input - expected a number. Returning to menu.");
+        }
+        catch (InvalidOperationException)
+        {
+            Console.WriteLine("User or equipment with given ID not found. Returning to menu.");
+        }
+        catch (ArgumentException e)
+        {
+            Console.WriteLine($"Invalid data: {e.Message}. Returning to menu.");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Something went wrong: {e.Message}. Returning to menu.");
+        }
     }
 
     private void ReturnEquipment()
     {
-        ShowRentals();
-        Console.Write("Rental ID: ");
-        var id = int.Parse(Console.ReadLine()!);
-        _rentalService.ReturnEquipment(id);
+        try {
+            ShowRentals();
+            Console.Write("Rental ID: ");
+            var id = int.Parse(Console.ReadLine()!);
+            _rentalService.ReturnEquipment(id);
+        } catch (FormatException)
+        {
+            Console.WriteLine("Invalid input - expected a number. Returning to menu.");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Something went wrong: {e.Message}. Returning to menu.");
+        }
     }
 
     private void MarkOutOfOrder()
     {
-        ShowAllEquipment();
-        Console.Write("Equipment ID: ");
-        var id = int.Parse(Console.ReadLine()!);
-        _equipmentService.MarkEquipmentAsOutOfOrder(id);
+        try {
+            ShowAllEquipment();
+            Console.Write("Equipment ID: ");
+            var id = int.Parse(Console.ReadLine()!);
+            _equipmentService.MarkEquipmentAsOutOfOrder(id);
+        } catch (FormatException)
+        {
+            Console.WriteLine("Invalid input - expected a number. Returning to menu.");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Something went wrong: {e.Message}. Returning to menu.");
+        }
     }
 
     private void MarkAvailable()
     {
-        ShowAllEquipment();
-        Console.Write("Equipment ID: ");
-        var id = int.Parse(Console.ReadLine()!);
-        _equipmentService.MarkEquipmentAsNotOutOfOrder(id);
+        try {
+            ShowAllEquipment();
+            Console.Write("Equipment ID: ");
+            var id = int.Parse(Console.ReadLine()!);
+            _equipmentService.MarkEquipmentAsNotOutOfOrder(id);
+        } catch (FormatException)
+        {
+            Console.WriteLine("Invalid input - expected a number. Returning to menu.");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Something went wrong: {e.Message}. Returning to menu.");
+        }
     }
 
     private void ShowActiveRentalsForUser()
     {
-        ShowAllUsers();
-        Console.Write("User ID: ");
-        var id = int.Parse(Console.ReadLine()!);
-        ShowUserActiveRentals(id);
+        try {
+            ShowAllUsers();
+            Console.Write("User ID: ");
+            var id = int.Parse(Console.ReadLine()!);
+            ShowUserActiveRentals(id);
+        } catch (FormatException)
+        {
+            Console.WriteLine("Invalid input - expected a number. Returning to menu.");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Something went wrong: {e.Message}. Returning to menu.");
+        }
+    }
+    private void ChangeRentalDates()
+    {
+        try {
+            ShowRentals();
+            Console.Write("Rental ID: ");
+            var id = int.Parse(Console.ReadLine()!);
+
+            Console.Write("Shift rental date back by how many days? ");
+            var daysAgo = int.Parse(Console.ReadLine()!);
+
+            _rentalService.ShiftRentalDateBack(id, daysAgo);
+            Console.WriteLine("Rental date shifted. Now return the equipment to see the fine.");
+        } catch (FormatException)
+        {
+            Console.WriteLine("Invalid input - expected a number. Returning to menu.");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Something went wrong: {e.Message}. Returning to menu.");
+        }
     }
 }

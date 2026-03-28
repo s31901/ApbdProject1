@@ -36,17 +36,21 @@ public class RentalService
 
     public void ReturnEquipment(int id)
     {   
-        if(_rentals.First(r => r.Id == id).IsReturned) Console.WriteLine("Equipment is already returned");
-        else
+        var rental = _rentals.First(r => r.Id == id);
+    
+        if (rental.IsReturned)
         {
-                    var rental = _rentals.First(r => r.Id == id);
-                    rental.Equipment.IsAvailable = true;
-                    rental.ReturnDate = DateTime.Now;
-                    if (rental.IsOverdue)
-                    {
-                        Console.WriteLine("Rental is overdue. Fine: " + rental.CalculatedFine);
-                    }
+            Console.WriteLine("Equipment is already returned.");
+            return;
         }
+
+        rental.ReturnDate = DateTime.Now;
+        rental.Equipment.IsAvailable = true;
+
+        if (rental.CalculatedFine > 0)
+            Console.WriteLine($"Rental is overdue. Fine: {rental.CalculatedFine:C}");
+        else
+            Console.WriteLine("Equipment returned on time.");
 
     } 
     
@@ -69,4 +73,9 @@ public class RentalService
     public int GetNumberOfRentals() => _rentals.Count;
     public int GetNumberOfActiveRentals() => _rentals.Count(r => !r.IsReturned);
     public int GetNumberOfOverdueRentals() => _rentals.Count(r => r.IsOverdue);
+    public void ShiftRentalDateBack(int id, int daysAgo)
+    {
+        var rental = _rentals.First(r => r.Id == id);
+        rental.RentalDate = DateTime.Now.AddDays(-daysAgo);
+    }
 }

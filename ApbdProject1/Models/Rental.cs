@@ -8,7 +8,7 @@ public class Rental
     public Equipment Equipment { get; }
     public User User { get; }
 
-    public DateTime RentalDate { get; }
+    public DateTime RentalDate { get; set; } //set here is only for testing purposes, more in readme
     public int RentalDurationDays { get; }
     public DateTime DueDate => RentalDate.AddDays(RentalDurationDays);
     public DateTime? ReturnDate { get; set; }
@@ -40,7 +40,6 @@ public class Rental
         $"Equipment: {Equipment.Name}\n" + 
         $"User: {User}\n" +
         $"Rental date: {RentalDate:dd.MM.yyyy} | Duration: {RentalDurationDays} days | " +
-        $"Return date: {(IsReturned ? ReturnDate!.Value.ToString("dd.MM.yyyy") : "Not returned")}\n" +
-        $"Fine: {CalculatedFine:C}";
+        $"Return date: {(IsReturned ? ReturnDate!.Value.ToString("dd.MM.yyyy") : "Not returned")}\n";
     
 }
